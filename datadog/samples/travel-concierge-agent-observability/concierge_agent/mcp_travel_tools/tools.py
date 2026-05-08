@@ -17,7 +17,11 @@ from serpapi import GoogleSearch
 # =============================================================================
 
 REGION = os.getenv("AWS_REGION")
-SERP_API_KEY = os.getenv("SERP_API_KEY")
+
+
+def _get_serp_api_key() -> str | None:
+    """Lazy getter so the key is read after SSM loads it into the environment."""
+    return os.getenv("SERP_API_KEY")
 
 
 # =============================================================================
@@ -27,7 +31,8 @@ SERP_API_KEY = os.getenv("SERP_API_KEY")
 
 def serp_search_tool(query: str) -> str:
     """Perform internet search using SerpAPI."""
-    if not SERP_API_KEY:
+    serp_api_key = _get_serp_api_key()
+    if not serp_api_key:
         return "Error: SERP API key not configured."
 
     try:
@@ -35,7 +40,7 @@ def serp_search_tool(query: str) -> str:
         params = {
             "engine": "google",  # google_hotels, # google_flights
             "q": query,
-            "api_key": SERP_API_KEY,
+            "api_key": serp_api_key,
         }
 
         search = GoogleSearch(params)
@@ -82,7 +87,7 @@ def serp_hotel_search(query: str, check_in_date: str, check_out_date: str) -> st
     Returns:
         Formatted string with hotel results
     """
-    if not SERP_API_KEY:
+    if not _get_serp_api_key():
         return "Error: SERP API key not configured."
 
     try:
@@ -92,7 +97,7 @@ def serp_hotel_search(query: str, check_in_date: str, check_out_date: str) -> st
             "q": query,
             "check_in_date": check_in_date,
             "check_out_date": check_out_date,
-            "api_key": SERP_API_KEY,
+            "api_key": _get_serp_api_key(),
         }
 
         search = GoogleSearch(params)
@@ -196,7 +201,7 @@ def serp_flight_search(
     Returns:
         Formatted string with flight results
     """
-    if not SERP_API_KEY:
+    if not _get_serp_api_key():
         return "Error: SERP API key not configured."
 
     try:
@@ -206,7 +211,7 @@ def serp_flight_search(
             "departure_id": departure_id,
             "arrival_id": arrival_id,
             "outbound_date": outbound_date,
-            "api_key": SERP_API_KEY,
+            "api_key": _get_serp_api_key(),
         }
 
         # Add return date if provided
