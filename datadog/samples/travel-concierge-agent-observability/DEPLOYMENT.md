@@ -354,21 +354,13 @@ aws bedrock-agentcore list-runtimes
 ### Common Issues
 **AWS CLI**: Ensure AWS CLI is configured with credentials and running the latest version
 
-**API Gateway logging**: Ensure API Gateway logs are enabled in CloudWatch
+**AgentCore Gateway logging**: If you need to debug gateway issues, enable debug mode on the AgentCore Gateway. You can do this in CDK by setting `exceptionLevel: 'DEBUG'` on the gateway construct, or via the console:
 
-**Error: CloudWatch Logs role ARN must be set in account settings to enable logging (Service: ApiGateway, Status Code: 400**
+1. Open the AgentCore Console → select your Gateway
+2. Under **Additional configurations** in the **Gateway details** section, check **Exception level debug**
+3. Save
 
-1. Create the IAM role for API Gateway to push logs to CloudWatch:
-
-   ```aws iam create-role --role-name APIGatewayCloudWatchLogsRole --assume-role-policy-document '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":"apigateway.amazonaws.com"},"Action":"sts:AssumeRole"}]}'```
-
-2. Attach the managed policy that allows pushing logs:
-
-   ```aws iam attach-role-policy --role-name APIGatewayCloudWatchLogsRole --policy-arn arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs```
-
-3. Configure API Gateway account settings to use this role:
-
-   ```aws apigateway update-account --patch-operations op=replace,path=/cloudwatchRoleArn,value=arn:aws:iam::<account_id>:role/APIGatewayCloudWatchLogsRole```
+With debugging on, gateway errors will return detailed messages (e.g., Lambda permission issues, target config errors) instead of the generic "An internal error occurred" response. Turn it off when you're done debugging.
 
 **AgentCore Observability**: Enable CloudWatch Transaction Search and log delivery for debugging
 
