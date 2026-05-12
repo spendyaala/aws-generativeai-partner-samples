@@ -91,7 +91,7 @@ The Travel Assistant specializes in all travel-related queries including destina
 #### 1. Weather Information
 **`get_weather(query)`**
 - Retrieves 5-day weather forecast for any city
-- Uses OpenWeather API with fuzzy city matching
+- Uses SerpAPI to fetch current weather data
 - Provides daily forecasts with temperature, conditions, and descriptions
 
 #### 2. Internet Search

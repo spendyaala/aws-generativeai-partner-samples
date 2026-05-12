@@ -16,7 +16,9 @@ from serpapi import GoogleSearch
 # CONFIGURATION
 # =============================================================================
 
-REGION = os.getenv("AWS_REGION")
+def _get_region() -> str | None:
+    """Lazy getter so the region is read at call time, not import time."""
+    return os.getenv("AWS_REGION")
 
 
 def _get_serp_api_key() -> str | None:

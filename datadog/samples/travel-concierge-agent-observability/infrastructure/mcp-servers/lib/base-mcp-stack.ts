@@ -81,7 +81,8 @@ export abstract class BaseMcpStack extends cdk.Stack {
         )
       }));
 
-      // Add KMS decrypt permission for SecureString parameters
+      // Add KMS decrypt permission for SecureString parameters, scoped to the
+      // specific parameter ARNs via SSM's PARAMETER_ARN encryption context.
       this.role.addToPolicy(new iam.PolicyStatement({
         sid: 'KMSDecrypt',
         effect: iam.Effect.ALLOW,
@@ -89,7 +90,10 @@ export abstract class BaseMcpStack extends cdk.Stack {
         resources: [`arn:aws:kms:${this.region}:${this.account}:key/*`],
         conditions: {
           StringEquals: {
-            'kms:ViaService': `ssm.${this.region}.amazonaws.com`
+            'kms:ViaService': `ssm.${this.region}.amazonaws.com`,
+            'kms:EncryptionContext:PARAMETER_ARN': props.ssmParameters.map(param =>
+              `arn:aws:ssm:${this.region}:${this.account}:parameter${param}`
+            )
           }
         }
       }));
